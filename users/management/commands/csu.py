@@ -9,7 +9,6 @@ class Command(BaseCommand):
             email="admin@sky.shop",
             first_name="Admin",
             last_name="SkyShop",
-            telegram_id="0",
             is_active=True,
             is_staff=True,
             is_superuser=True,
