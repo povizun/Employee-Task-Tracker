@@ -1,0 +1,20 @@
+[tool.poetry]
+name = "employee-task-tracker"
+version = "0.1.0"
+description = ""
+authors = ["Futeki <Povizun@bk.ru>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.11"
+django = "^5.0.7"
+psycopg2-binary = "^2.9.9"
+python-dotenv = "^1.0.1"
+djangorestframework = "^3.15.2"
+black = "^24.4.2"
+isort = "^5.13.2"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
