@@ -1,6 +1,6 @@
-from task_tracker.models import Task
-
 from rest_framework import serializers
+
+from task_tracker.models import Task
 
 
 class StatusValidator:
@@ -15,7 +15,10 @@ class StatusValidator:
                     "Если указан сотрудник то задача может или выполняться или быть выполненной"
                 )
         else:
-            if value.get(self.status) in (Task.TaskStatus.COMPLETED, Task.TaskStatus.IN_PROGRESS):
+            if value.get(self.status) in (
+                Task.TaskStatus.COMPLETED,
+                Task.TaskStatus.IN_PROGRESS,
+            ):
                 raise serializers.ValidationError(
                     "Если сотрудник не указан то задача может быть только не взятой"
                 )

@@ -1,4 +1,4 @@
-[tool.poetry]
+a[tool.poetry]
 name = "employee-task-tracker"
 version = "0.1.0"
 description = ""

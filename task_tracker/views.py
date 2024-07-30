@@ -12,7 +12,7 @@ class TaskViewSet(ModelViewSet):
     serializer_class = TaskSerializer
 
 
-class UrgentTaskRetrieveAPIView(generics.RetrieveAPIView):
+class UrgentTaskRetrieveAPIView(generics.ListAPIView):
     serializer_class = UrgentTaskSerializer
     queryset = Task.objects.filter(
         parent_task__status=Task.TaskStatus.IN_PROGRESS,
@@ -25,6 +25,6 @@ class EmployeeViewSet(ModelViewSet):
     serializer_class = EmployeeSerializer
 
 
-class WorkingEmployeeRetrieveAPIView(generics.RetrieveAPIView):
+class WorkingEmployeeRetrieveAPIView(generics.ListAPIView):
     serializer_class = WorkingEmployeeSerializer
     queryset = Employee.objects.all()

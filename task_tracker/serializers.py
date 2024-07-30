@@ -1,3 +1,4 @@
+from django.db.models import Count
 from rest_framework import serializers
 
 from task_tracker.models import Employee, Task
@@ -14,20 +15,23 @@ class TaskSerializer(serializers.ModelSerializer):
 
 
 class UrgentTaskSerializer(serializers.ModelSerializer):
-    employee = serializers.SerializerMethodField()
+    employee = serializers.ModelSerializer
 
     class Meta:
         model = Task
-        fields = ["title", "deadline"]
+        fields = ["title", "deadline", "employee"]
 
     def get_employee(self, instance):
-        least_loaded_num_of_tasks = (
-            Employee.objects.all().earliest("task__count").task.count()
-        )
-        return Employee.objects.filter(
-            task__count=least_loaded_num_of_tasks
-        ) | Employee.objects.filter(task__count=least_loaded_num_of_tasks + 2).filter(
-            id=instance.employee.id
+        annotated_queryset = Employee.objects.annotate(number_of_tasks=Count("task"))
+        least_loaded_num_of_tasks = annotated_queryset.earliest(
+            "number_of_tasks"
+        ).number_of_tasks
+        return annotated_queryset.filter(
+            number_of_tasks=least_loaded_num_of_tasks
+        ) | annotated_queryset.filter(
+            number_of_tasks=least_loaded_num_of_tasks + 2
+        ).filter(
+            pk=instance.parent_task.employee.pk
         )
 
 
@@ -39,7 +43,7 @@ class EmployeeSerializer(serializers.ModelSerializer):
 
 class WorkingEmployeeSerializer(serializers.ModelSerializer):
     number_of_tasks = serializers.SerializerMethodField()
-    tasks = serializers.SerializerMethodField()
+    tasks = serializers.ModelSerializer
 
     class Meta:
         model = Employee
