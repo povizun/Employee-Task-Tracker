@@ -1,7 +1,6 @@
 from django.contrib.auth.models import AbstractUser
 from django.db import models
 
-
 NULLABLE = {"blank": True, "null": True}
 
 
@@ -17,12 +16,6 @@ class User(AbstractUser):
         **NULLABLE,
         verbose_name="номер телефона",
         help_text="Укажите ваш номер"
-    )
-    avatar = models.ImageField(
-        upload_to="users/avatars",
-        **NULLABLE,
-        verbose_name="аватар",
-        help_text="Загрузите ваш аватар"
     )
 
     USERNAME_FIELD = "email"

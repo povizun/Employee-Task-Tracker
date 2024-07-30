@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from task_tracker.models import Task, Employee
+from task_tracker.models import Employee, Task
 
 
 @admin.register(Employee)
