@@ -1,4 +1,4 @@
-a[tool.poetry]
+[tool.poetry]
 name = "employee-task-tracker"
 version = "0.1.0"
 description = ""
@@ -16,6 +16,7 @@ isort = "^5.13.2"
 djangorestframework-simplejwt = "^5.3.1"
 drf-yasg = "^1.21.7"
 django-filter = "^24.2"
+coverage = "^7.6.0"
 
 
 [build-system]
