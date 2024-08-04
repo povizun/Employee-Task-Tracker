@@ -14,36 +14,48 @@ class TaskSerializer(serializers.ModelSerializer):
         ]
 
 
-class UrgentTaskSerializer(serializers.ModelSerializer):
-    employee = serializers.ModelSerializer
-
-    class Meta:
-        model = Task
-        fields = ["title", "deadline", "employee"]
-
-    def get_employee(self, instance):
-        annotated_queryset = Employee.objects.annotate(number_of_tasks=Count("task"))
-        least_loaded_num_of_tasks = annotated_queryset.earliest(
-            "number_of_tasks"
-        ).number_of_tasks
-        return annotated_queryset.filter(
-            number_of_tasks=least_loaded_num_of_tasks
-        ) | annotated_queryset.filter(
-            number_of_tasks=least_loaded_num_of_tasks + 2
-        ).filter(
-            pk=instance.parent_task.employee.pk
-        )
-
-
 class EmployeeSerializer(serializers.ModelSerializer):
     class Meta:
         model = Employee
         fields = "__all__"
 
 
+class UrgentTaskSerializer(serializers.ModelSerializer):
+    employee_recommended = serializers.SerializerMethodField()
+
+    class Meta:
+        model = Task
+        fields = ["title", "deadline", "employee_recommended"]
+
+    def get_employee_recommended(self, instance):
+        annotated_queryset = Employee.objects.all().annotate(
+            number_of_tasks=Count("task")
+        )
+        least_loaded_num_of_tasks = annotated_queryset.earliest(
+            "number_of_tasks"
+        ).number_of_tasks
+        print(f"annotated_queryset")
+        annotated_queryset = annotated_queryset.filter(
+            number_of_tasks=least_loaded_num_of_tasks
+        ) | annotated_queryset.filter(
+            number_of_tasks__lte=least_loaded_num_of_tasks + 2
+        ).filter(
+            pk=instance.parent_task.employee.pk
+        )
+        return EmployeeSerializer(
+            instance=annotated_queryset, many=True, read_only=True
+        ).data
+
+
+class TasksOfWorkingEmployeeSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Task
+        fields = "__all__"
+
+
 class WorkingEmployeeSerializer(serializers.ModelSerializer):
     number_of_tasks = serializers.SerializerMethodField()
-    tasks = serializers.ModelSerializer
+    tasks = TasksOfWorkingEmployeeSerializer(many=True, source="task", read_only=True)
 
     class Meta:
         model = Employee
@@ -52,6 +64,3 @@ class WorkingEmployeeSerializer(serializers.ModelSerializer):
 
     def get_number_of_tasks(self, instance):
         return instance.task.all().filter(status=Task.TaskStatus.IN_PROGRESS).count()
-
-    def get_tasks(self, instance):
-        return instance.task.all().filter(status=Task.TaskStatus.IN_PROGRESS)
